@@ -42,6 +42,25 @@ class ReportController extends Controller
             'chat_text' => 'required|string',
         ]);
 
+        try {
+            $mlApiUrl = env('ML_API_URL', 'http://127.0.0.1:8001');
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->post($mlApiUrl . '/predict', [
+                'message' => $request->chat_text
+            ]);
+
+            if (!$response->successful()) {
+                throw new \Exception('ML API returned error status');
+            }
+
+            $mlData = $response->json();
+            $mlResultData = $mlData['ml_result'];
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Mohon Maaf untuk Fitur Ini sedang dalam Maintenance',
+                'error' => $e->getMessage()
+            ], 503);
+        }
+
         $report = Report::create([
             'ticket' => Report::generateTicket(),
             'channel_chat' => $request->channel_chat,
@@ -56,10 +75,10 @@ class ReportController extends Controller
 
         $mlResult = MlResult::create([
             'report_id' => $report->id,
-            'label' => 'phishing',
-            'risk_score' => rand(60, 100),
-            'priority' => 'high',
-            'reason' => 'Terdeteksi mengandung URL mencurigakan'
+            'label' => $mlResultData['label'],
+            'risk_score' => $mlResultData['risk_score'],
+            'priority' => $mlResultData['priority'],
+            'reason' => $mlResultData['reason']
         ]);
 
         return response()->json([
