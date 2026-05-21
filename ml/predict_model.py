@@ -331,10 +331,10 @@ def predict_sms(message: str):
 def map_label(kategori: str) -> str:
     mapping = {
         "Penipuan": "phishing",
-        "Promo": "promo",
-        "Normal": "normal"
+        "Promo": "non-phishing",
+        "Normal": "non-phishing"
     }
-    return mapping.get(kategori, "unknown")
+    return mapping.get(kategori, "non-phishing")
 
 
 def get_priority(risk_score: float) -> str:
