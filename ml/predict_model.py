@@ -164,7 +164,7 @@ def avg_word_length(text: str) -> float:
 
 
 def extract_urls(text: str):
-    url_pattern = r"((?:https?://|www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)"
+    url_pattern = r"(https?://[^\s]+|www\.[^\s]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})"
     return re.findall(url_pattern, text)
 
 
