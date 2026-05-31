@@ -78,7 +78,8 @@ class ReportController extends Controller
             'label' => $mlResultData['label'],
             'risk_score' => $mlResultData['risk_score'],
             'priority' => $mlResultData['priority'],
-            'reason' => $mlResultData['reason']
+            'reason' => $mlResultData['reason'],
+            'url_analysis' => $mlData['url_analysis'] ?? null
         ]);
 
         return response()->json([

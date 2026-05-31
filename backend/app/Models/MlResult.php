@@ -11,8 +11,13 @@ class MlResult extends Model
     'label',
     'risk_score',
     'priority',
-    'reason'
+    'reason',
+    'url_analysis'
 ];
+
+    protected $casts = [
+        'url_analysis' => 'array',
+    ];
 
    public function report()
 {

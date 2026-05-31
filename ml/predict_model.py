@@ -235,7 +235,7 @@ def build_explanations(original_text: str, predicted_label: int, url_analysis: d
 
     if url_analysis["has_url"]:
         if any(item["status"] == "unverified" for item in url_analysis["results"]):
-            reasons.append("Terdapat URL yang tidak termasuk domain resmi whitelist.")
+            reasons.insert(0, "Link ini tidak terdaftar sebagai Link Resmi CIMB Niaga, Link yang dikirimkan kemungkinan merupakan Link Phising")
         elif all(item["status"] == "verified" for item in url_analysis["results"]):
             reasons.append("URL yang terdeteksi sesuai dengan domain resmi whitelist.")
 
@@ -268,9 +268,10 @@ def adjust_prediction(base_category: str, base_risk: float, url_analysis: dict, 
         item["status"] == "unverified" for item in url_analysis["results"]
     )
 
-    # Jika URL tidak terverifikasi, tingkatkan risiko
+    # Jika URL tidak terverifikasi, otomatis cap phising
     if has_unverified:
-        adjusted_risk = min(adjusted_risk + 15, 100)
+        adjusted_risk = 100.0
+        adjusted_category = "Penipuan"
 
     # Jika URL resmi/verified, turunkan risiko karena tautannya valid
     if has_verified:
