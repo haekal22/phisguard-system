@@ -36,25 +36,28 @@ class ArticleController extends Controller
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'kategori_artikel' => 'required|in:Tips,Modus,Update Kasus',
-            'gambar' => 'required|string',
+            'gambar' => 'required',
             'alt_text' => 'nullable|string|max:255',
             'isi_artikel' => 'required|string',
             'rangkuman' => 'required|string|max:500',
         ]);
 
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $gambarPath = $request->file('gambar')->store('articles', 'public');
+        } else {
+            $gambarPath = $request->input('gambar');
+        }
+
         $article = Article::create([
             'judul' => $validated['judul'],
             'kategori_artikel' => $validated['kategori_artikel'],
+            'gambar' => $gambarPath,
             'alt_text' => $validated['alt_text'] ?? null,
             'isi_artikel' => $validated['isi_artikel'],
             'rangkuman' => $validated['rangkuman'],
             'created_by' => auth()->id(),
         ]);
-
-        if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('articles', 'public');
-            $article->update(['gambar' => $path]);
-        }
 
         return response()->json([
             'message' => 'Article created successfully',
@@ -104,7 +107,7 @@ class ArticleController extends Controller
         $validated = $request->validate([
             'judul' => 'nullable|string|max:255',
             'kategori_artikel' => 'nullable|in:Tips,Modus,Update Kasus',
-            'gambar' => 'nullable|image|mimes:jpeg,png|max:5120',
+            'gambar' => 'nullable',
             'alt_text' => 'nullable|string|max:255',
             'isi_artikel' => 'nullable|string',
             'rangkuman' => 'nullable|string|max:500',
